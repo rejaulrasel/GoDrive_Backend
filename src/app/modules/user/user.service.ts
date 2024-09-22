@@ -130,6 +130,24 @@ async function getUserForRecoverAccountFromDb(email: string, next: NextFunction)
     }
 } //end
 
+async function updateSpecificUserIntoDb(payload: Partial<TUser>, email: string, next: NextFunction) {
+
+    try {
+        const res = await User.findOneAndUpdate({ email }, payload, { new: true });
+        if (res) {
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: 'User Updated successfully',
+                data: res
+            }
+        }
+    } catch (error) {
+        next(error)
+    }
+} //end
+
+
 async function getRoleBaseUserFromDb(role: string, next: NextFunction) {
 
     try {
@@ -156,5 +174,6 @@ export const UserServices = {
     getSingleUserDataFromDb,
     getRoleBaseUserFromDb,
     getUserForRecoverAccountFromDb,
-    
+    updateSpecificUserIntoDb,
+
 };

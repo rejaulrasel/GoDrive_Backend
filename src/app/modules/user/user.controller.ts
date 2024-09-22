@@ -113,6 +113,63 @@ async function getUserForRecoverAccount(req: Request, res: Response, next: NextF
     }
 } //end
 
+async function updateSpecificUser(req: Request, res: Response, next: NextFunction) {
+    const authHeader = req.headers.authorization;
+    const { email } = req.query;
+
+    if (req.body.role || req.body.email) {
+        return res.status(401).json({
+            success: false,
+            statusCode: 401,
+            message: `Role and email cannot be changed. Contact admin if it is important`
+        });
+    }
+
+    if (!authHeader || !authHeader.startsWith('Bearer')) {
+        return res.status(401).json({
+            success: false,
+            statusCode: 401,
+            message: 'You have no access to this route'
+        });
+    }
+
+    const extractToken = authHeader.slice(7);
+
+    jwt.verify(extractToken, (config.jwt_access_token as string), async (err, decoded) => {
+        if (err) {
+            return res.status(401).json({
+                success: false,
+                statusCode: 401,
+                message: 'You have no access to this route'
+            });
+
+        } else {
+            if ((decoded as JwtPayload).user !== email) {
+                return res.status(401).json({
+                    success: false,
+                    statusCode: 401,
+                    message: `You have no access to this route`
+                });
+            } else {
+                try {
+                    const result = await UserServices.updateSpecificUserIntoDb(req.body, email as string, next)
+                    if (result) {
+                        res.status(result.statusCode).json({
+                            success: result.success,
+                            statusCode: result.statusCode,
+                            message: result.message,
+                            data: result.data,
+                        });
+                    };
+
+                } catch (error) {
+                    next(error)
+                }
+            }
+        }
+    })
+} //end
+
 
 async function getRoleBaseUser(req: Request, res: Response, next: NextFunction) {
 
@@ -147,6 +204,7 @@ export const UserControllers = {
     getSigleUserObj,
     getRoleBaseUser,
     getUserForRecoverAccount,
+    updateSpecificUser,
 
 
 };

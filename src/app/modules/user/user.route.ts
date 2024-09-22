@@ -13,6 +13,8 @@ router.post('/signup', ValidationRequest(UserValidation.createUserValidationSche
 
 router.post('/signin', ValidationRequest(UserValidation.loginUserValidationSchema), UserControllers.loginUser);
 
+router.patch('/user/update', ValidationRequest(UserValidation.updateUserValidationSchema), UserControllers.updateSpecificUser);
+
 router.get('/user', UserControllers.getSigleUserObj);
 
 router.get('/user/recovery', UserControllers.getUserForRecoverAccount);
