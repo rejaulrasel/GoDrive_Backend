@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import config from "../../config";
+import verifyTokenSync from "../../utils/verifyTokenSync";
 
 async function createUserIntoDb(payload: TUser, next: NextFunction) {
     try {
@@ -130,6 +131,47 @@ async function getUserForRecoverAccountFromDb(email: string, next: NextFunction)
     }
 } //end
 
+
+async function recoverAccountFromDb(payload: { token: string, newPassword: string }, next: NextFunction) {
+    try {
+        const decoded = verifyTokenSync(payload.token, config.jwt_access_token as string);
+
+        if (!decoded || !decoded.email) {
+            return {
+                success: false,
+                message: 'OTP Expired',
+            };
+        }
+
+        const email = decoded.email;
+        const encryptedNewPassword = await bcrypt.hash(payload.newPassword, Number(config.bcrypt_salt_rounds));
+
+        if (encryptedNewPassword) {
+            const updateUser = await User.findOneAndUpdate({ email }, { password: encryptedNewPassword });
+
+            if (updateUser) {
+                return {
+                    success: true,
+                    message: 'Account recovered successfully',
+                };
+            } else {
+                return {
+                    success: false,
+                    message: 'Something went wrong',
+                };
+            }
+        } else {
+            return {
+                success: false,
+                message: 'Something went wrong',
+            };
+        }
+    } catch (error) {
+        next(error);
+    }
+} //end
+
+
 async function updateSpecificUserIntoDb(payload: Partial<TUser>, email: string, next: NextFunction) {
 
     try {
@@ -165,6 +207,24 @@ async function getRoleBaseUserFromDb(role: string, next: NextFunction) {
     }
 } //end
 
+async function changeUserRoleIntoDb(payload: { _id: string; role: string }, next: NextFunction) {
+
+    try {
+        const res = await User.findByIdAndUpdate(payload._id, { role: payload?.role }, { new: true });
+        if (res) {
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: `user role changed to ${payload?.role}`,
+                data: res
+            }
+        }
+
+    } catch (error) {
+        next(error)
+    }
+} //end
+
 
 
 
@@ -175,5 +235,6 @@ export const UserServices = {
     getRoleBaseUserFromDb,
     getUserForRecoverAccountFromDb,
     updateSpecificUserIntoDb,
-
+    recoverAccountFromDb,
+    changeUserRoleIntoDb
 };

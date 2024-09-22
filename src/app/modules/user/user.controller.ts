@@ -97,6 +97,22 @@ async function getSigleUserObj(req: Request, res: Response, next: NextFunction) 
     })
 } //end
 
+
+async function recoverAccount(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await UserServices.recoverAccountFromDb(req.body, next);
+        if (result) {
+            res.json({
+                success: result.success,
+                message: result.message
+            })
+        }
+    } catch (error) {
+        next(error);
+    }
+} //end
+
+
 async function getUserForRecoverAccount(req: Request, res: Response, next: NextFunction) {
     try {
         const result = await UserServices.getUserForRecoverAccountFromDb(req.query?.email as string, next);
@@ -196,6 +212,23 @@ async function getRoleBaseUser(req: Request, res: Response, next: NextFunction) 
     }
 } //end
 
+async function changeUserRole(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await UserServices.changeUserRoleIntoDb(req.body, next);
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        }
+    } catch (error) {
+        next(error)
+    }
+} //end
+
 
 
 export const UserControllers = {
@@ -205,7 +238,7 @@ export const UserControllers = {
     getRoleBaseUser,
     getUserForRecoverAccount,
     updateSpecificUser,
-
-
+    recoverAccount,
+    changeUserRole
 };
 
