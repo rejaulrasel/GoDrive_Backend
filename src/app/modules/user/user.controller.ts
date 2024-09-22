@@ -47,7 +47,7 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
     }
 } //end
 
-async function getFullUserObj(req: Request, res: Response, next: NextFunction) {
+async function getSigleUserObj(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
     const { email } = req.query;
 
@@ -79,7 +79,7 @@ async function getFullUserObj(req: Request, res: Response, next: NextFunction) {
             } else {
 
                 try {
-                    const result = await UserServices.getFullUserDataFormDb(email as string, next);
+                    const result = await UserServices.getSingleUserDataFromDb(email as string, next);
                     if (result) {
                         res.status(result.statusCode).json({
                             success: result.success,
@@ -97,11 +97,38 @@ async function getFullUserObj(req: Request, res: Response, next: NextFunction) {
     })
 } //end
 
+async function getRoleBaseUser(req: Request, res: Response, next: NextFunction) {
+
+    if (req?.query?.role !== 'admin' && req.query.role !== 'user') {
+        return res.status(401).json({
+            success: false,
+            statusCode: 401,
+            message: `role must be admin or user`
+        });
+    };
+
+    try {
+        const result = await UserServices.getRoleBaseUserFromDb(req?.query?.role as string, next);
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        }
+    } catch (error) {
+        next(error)
+    }
+} //end
+
 
 
 export const UserControllers = {
     createUser,
     loginUser,
-    getFullUserObj,
+    getSigleUserObj,
+    getRoleBaseUser,
+
 };
 

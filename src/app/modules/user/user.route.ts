@@ -3,6 +3,7 @@ import { UserControllers } from './user.controller';
 import ValidationRequest from '../../middlewares/zodValidation';
 import { UserValidation } from './user.validation';
 import CheckUniqueEmail from '../../middlewares/checkUniqueEmail';
+import Auth from '../../middlewares/auth';
 
 
 
@@ -12,7 +13,8 @@ router.post('/signup', ValidationRequest(UserValidation.createUserValidationSche
 
 router.post('/signin', ValidationRequest(UserValidation.loginUserValidationSchema), UserControllers.loginUser);
 
-router.get('/user', UserControllers.getFullUserObj);
+router.get('/user', UserControllers.getSigleUserObj);
 
+router.get('/users', Auth('admin'), UserControllers.getRoleBaseUser);
 
 export const UserRoutes = router;

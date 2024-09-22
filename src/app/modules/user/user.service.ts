@@ -73,7 +73,7 @@ async function loginUser(payload: TLogin, next: NextFunction) {
     }
 } //end
 
-async function getFullUserDataFormDb(email: string, next: NextFunction) {
+async function getSingleUserDataFromDb(email: string, next: NextFunction) {
 
     try {
         const user = await User.findOne({ email });
@@ -90,11 +90,29 @@ async function getFullUserDataFormDb(email: string, next: NextFunction) {
     }
 } //end
 
+async function getRoleBaseUserFromDb(role: string, next: NextFunction) {
+
+    try {
+        const res = await User.find({ role });
+        if (res) {
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: `${role}s retrieved successfully`,
+                data: res
+            }
+        }
+    } catch (error) {
+        next(error);
+    }
+} //end
+
 
 
 
 export const UserServices = {
     createUserIntoDb,
     loginUser,
-    getFullUserDataFormDb,
+    getSingleUserDataFromDb,
+    getRoleBaseUserFromDb,
 };
