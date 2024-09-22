@@ -97,6 +97,23 @@ async function getSigleUserObj(req: Request, res: Response, next: NextFunction) 
     })
 } //end
 
+async function getUserForRecoverAccount(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await UserServices.getUserForRecoverAccountFromDb(req.query?.email as string, next);
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        }
+    } catch (error) {
+        next(error)
+    }
+} //end
+
+
 async function getRoleBaseUser(req: Request, res: Response, next: NextFunction) {
 
     if (req?.query?.role !== 'admin' && req.query.role !== 'user') {
@@ -129,6 +146,8 @@ export const UserControllers = {
     loginUser,
     getSigleUserObj,
     getRoleBaseUser,
+    getUserForRecoverAccount,
+
 
 };
 

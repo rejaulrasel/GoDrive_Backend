@@ -90,6 +90,46 @@ async function getSingleUserDataFromDb(email: string, next: NextFunction) {
     }
 } //end
 
+async function getUserForRecoverAccountFromDb(email: string, next: NextFunction) {
+    try {
+        const user: TUser | null = await User.findOne({ email });
+        if (user) {
+            const token = jwt.sign({ email: user?.email }, (config.jwt_access_token as string), { expiresIn: '15m' });
+            if (!token) {
+                return {
+                    success: false,
+                    statusCode: httpStatus.OK,
+                    message: 'something went wrong',
+                    data: []
+                }
+            }
+
+            const resBody = {
+                name: user?.name,
+                email: user?.email,
+                photo: user?.photo,
+                token,
+            }
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: 'User retrieved successfully',
+                data: resBody
+            }
+
+        } else {
+            return {
+                success: false,
+                statusCode: httpStatus.OK,
+                message: 'User Not Found',
+                data: []
+            }
+        }
+    } catch (error) {
+        next(error);
+    }
+} //end
+
 async function getRoleBaseUserFromDb(role: string, next: NextFunction) {
 
     try {
@@ -115,4 +155,6 @@ export const UserServices = {
     loginUser,
     getSingleUserDataFromDb,
     getRoleBaseUserFromDb,
+    getUserForRecoverAccountFromDb,
+    
 };

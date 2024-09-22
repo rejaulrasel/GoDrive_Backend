@@ -15,6 +15,7 @@ router.post('/signin', ValidationRequest(UserValidation.loginUserValidationSchem
 
 router.get('/user', UserControllers.getSigleUserObj);
 
+router.get('/user/recovery', UserControllers.getUserForRecoverAccount);
 router.get('/users', Auth('admin'), UserControllers.getRoleBaseUser);
 
 export const UserRoutes = router;
