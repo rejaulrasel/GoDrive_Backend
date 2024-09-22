@@ -21,8 +21,34 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
 } //end
 
 
+async function loginUser(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await UserServices.loginUser(req.body, next);
+        if (result) {
+            res.cookie('refreshToken', result?.refreshToken, {
+                secure: false,
+                httpOnly: true
+            });
+
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+                token: result.accessToken,
+            });
+        };
+
+    } catch (error) {
+        next(error)
+    }
+} //end
+
+
 
 export const UserControllers = {
     createUser,
+    loginUser
 };
 
