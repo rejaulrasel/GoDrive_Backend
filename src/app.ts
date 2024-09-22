@@ -4,7 +4,7 @@ import status from 'http-status';
 
 import { globalErrorHandler } from './app/middlewares/globalErrorHandler';
 
-import { UserRoute } from './app/modules/user/user.route';
+import { UserRoutes } from './app/modules/user/user.route';
 
 const app: Application = express();
 
@@ -18,7 +18,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // application route;
-app.use('/api/auth', UserRoute);
+app.use('/api/auth', UserRoutes);
 
 
 // global error handler

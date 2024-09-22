@@ -73,11 +73,28 @@ async function loginUser(payload: TLogin, next: NextFunction) {
     }
 } //end
 
+async function getFullUserDataFormDb(email: string, next: NextFunction) {
+
+    try {
+        const user = await User.findOne({ email });
+        if (user) {
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: 'User retrieved successfully',
+                data: user
+            }
+        }
+    } catch (error) {
+        next(error)
+    }
+} //end
+
 
 
 
 export const UserServices = {
     createUserIntoDb,
     loginUser,
-
+    getFullUserDataFormDb,
 };
