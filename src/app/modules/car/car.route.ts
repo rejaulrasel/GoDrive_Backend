@@ -6,10 +6,24 @@ import { CarValidationSchema } from "./car.validation";
 
 const router = Router();
 
+router.post(
+  "/",
+  Auth("admin"),
+  ValidationRequest(CarValidationSchema.createCarValidationSchema),
+  CarControllers.createCar,
+);
 
-router.post('/', Auth('admin'), ValidationRequest(CarValidationSchema.createCarValidationSchema), CarControllers.createCar);
+router.get("/", CarControllers.getAllCar);
 
-router.get('/', CarControllers.getAllCar);
+router.get("/:id", CarControllers.getSpecificCar);
 
+router.put(
+  "/:id",
+  Auth("admin"),
+  ValidationRequest(CarValidationSchema.updateCarValidationSchema),
+  CarControllers.updateSpecificCar,
+);
+
+router.delete("/:id", Auth("admin"), CarControllers.deleteACar);
 
 export const CarRoutes = router;
