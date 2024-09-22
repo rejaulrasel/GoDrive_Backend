@@ -9,5 +9,7 @@ const router = Router();
 
 router.post('/', Auth('admin'), ValidationRequest(CarValidationSchema.createCarValidationSchema), CarControllers.createCar);
 
+router.get('/', CarControllers.getAllCar);
+
 
 export const CarRoutes = router;
