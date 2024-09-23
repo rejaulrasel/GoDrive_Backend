@@ -77,26 +77,21 @@ async function updateSpecificCar(
   }
 } //end
 
-
-
 async function deleteACar(req: Request, res: Response, next: NextFunction) {
+  try {
+    const result = await CarServices.deleteACarFromDb(req.params.id, next);
 
-    try {
-        const result = await CarServices.deleteACarFromDb(req.params.id, next);
-
-        if (result) {
-            res.status(result.statusCode).json({
-                success: result.success,
-                statusCode: result.statusCode,
-                message: result.message,
-                data: result.data
-            });
-        };
-
-    } catch (error) {
-        next(error);
+    if (result) {
+      res.status(result.statusCode).json({
+        success: result.success,
+        statusCode: result.statusCode,
+        message: result.message,
+        data: result.data,
+      });
     }
-
+  } catch (error) {
+    next(error);
+  }
 } //end
 
 export const CarControllers = {

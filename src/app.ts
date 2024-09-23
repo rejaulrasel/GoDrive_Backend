@@ -22,7 +22,7 @@ app.get("/", (req: Request, res: Response) => {
 // application route;
 app.use("/api/auth", UserRoutes);
 app.use("/api/cars", CarRoutes);
-app.use('/api/bookings', BookingRoutes);
+app.use("/api/bookings", BookingRoutes);
 
 // global error handler
 app.use(globalErrorHandler);

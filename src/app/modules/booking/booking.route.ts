@@ -6,24 +6,38 @@ import { bookingControllers } from "./booking.controller";
 
 const router = Router();
 
-router.get('/', Auth('admin'), bookingControllers.getAllBookings);
+router.get("/", Auth("admin"), bookingControllers.getAllBookings);
 
+router.post(
+  "/",
+  Auth("user"),
+  ValidationRequest(BookingValidation.createCarBookingValidationSchema),
+  bookingControllers.createBooking,
+);
 
-router.post('/', Auth('user'), ValidationRequest(BookingValidation.createCarBookingValidationSchema), bookingControllers.createBooking);
+router.patch(
+  "/action/status/:bookingId",
+  bookingControllers.updateBookingStatus,
+);
 
+router.get(
+  "/my-bookings",
+  Auth("user"),
+  bookingControllers.getUserSpecificBookings,
+);
 
+router.patch(
+  "/action/payout/success",
+  Auth("user"),
+  bookingControllers.afterPaymentPatch,
+);
 
-
-
-
-
-
-
-
-router.get('/my-bookings', Auth('user'), bookingControllers.getUserSpecificBookings);
-
-router.delete('/delete', Auth('admin'), bookingControllers.deleteCanceledBooking);
+router.delete(
+  "/delete",
+  Auth("admin"),
+  bookingControllers.deleteCanceledBooking,
+);
 
 export const BookingRoutes = router;
 
-// 
+//

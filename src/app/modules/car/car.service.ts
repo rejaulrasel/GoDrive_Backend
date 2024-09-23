@@ -136,37 +136,31 @@ async function updateSpecificCarIntoDb(
   }
 } //end;
 
-
-
-
-
-
-
 async function deleteACarFromDb(query: string, next: NextFunction) {
-
-    try {
-        const dataAfterDelete = await Car.findByIdAndUpdate(query, { isDeleted: true }, { new: true });
-        if (dataAfterDelete) {
-            return {
-                success: true,
-                statusCode: 200,
-                message: 'Car Deleted successfully',
-                data: dataAfterDelete
-            };
-
-        } else {
-            return {
-                success: false,
-                statusCode: 404,
-                message: 'Invalid ID',
-                data: []
-            };
-        }
-
-    } catch (error) {
-        next(error);
+  try {
+    const dataAfterDelete = await Car.findByIdAndUpdate(
+      query,
+      { isDeleted: true },
+      { new: true },
+    );
+    if (dataAfterDelete) {
+      return {
+        success: true,
+        statusCode: 200,
+        message: "Car Deleted successfully",
+        data: dataAfterDelete,
+      };
+    } else {
+      return {
+        success: false,
+        statusCode: 404,
+        message: "Invalid ID",
+        data: [],
+      };
     }
-
+  } catch (error) {
+    next(error);
+  }
 } //end;
 
 export const CarServices = {
