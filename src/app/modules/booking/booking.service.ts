@@ -110,6 +110,152 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
 } //end
 
 
+async function getUserSpecificBookingsFromDb(user: JwtPayload, query: Record<string, unknown>, next: NextFunction) {
+    const session = await mongoose.startSession();
+    const _query: Record<string, unknown> = {};
+
+    try {
+        session.startTransaction();
+
+        const userObj = await User.findOne({ email: user?.user }).session(session);
+
+        if (!userObj) {
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: 'Failed to fetch booking',
+                data: []
+            };
+        };
+        _query.user = userObj._id;
+        if (query.status) {
+            _query.status = query.status;
+        };
+        if (query._id) {
+            _query._id = query._id
+        }
+        const bookings = await Booking.find(_query).session(session).populate('car user');
+
+        // if (!bookings.length) {
+        //     return {
+        //         success: false,
+        //         statusCode: httpStatus.BAD_REQUEST,
+        //         message: 'Failed to fetch booking',
+        //         data: []
+        //     };
+
+        // };
+
+        await session.commitTransaction();
+        await session.endSession();
+
+        return {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: 'My Bookings retrieved successfully',
+            data: bookings
+        };
+
+
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+
+        next(error);
+    }
+
+} //end
+
+
+
+async function getAllBookingsFromDb(query: any, next: NextFunction) {
+    let bookings;
+
+    try {
+        if (query.status) {
+            bookings = await Booking.find({ status: query.status }).populate('car user');
+
+            if (!bookings.length) {
+                return {
+                    success: false,
+                    statusCode: httpStatus.OK,
+                    message: 'Data not found',
+                    data: []
+                };
+
+            } else {
+                return {
+                    success: true,
+                    statusCode: httpStatus.OK,
+                    message: 'Bookings retrieved successfully',
+                    data: bookings
+                };
+            }
+        }
+
+        if (query.carId && !query.date) {
+            bookings = await Booking.find({ car: query?.carId }).populate('car user');
+
+        } else if (query.date && !query.carId) {
+
+            if (isValidDate(query.date)) {
+                bookings = await Booking.find({ date: query?.date }).populate('car user');
+
+            } else {
+                return {
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Date Not Valid',
+                    data: []
+                };
+
+            };
+
+        } else if (query.date && query.carId) {
+
+            if (isValidDate(query.date)) {
+                bookings = await Booking.find({ car: query?.carId, date: query?.date }).populate('car user');
+
+            } else {
+                return {
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Date Not Valid',
+                    data: []
+                };
+            };
+
+        } else {
+            bookings = await Booking.find().populate('car user');
+        }
+
+        if (!bookings.length) {
+            return {
+                success: false,
+                statusCode: httpStatus.NOT_FOUND,
+                message: 'Not Found',
+                data: []
+            };
+
+        }
+        return {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: 'Bookings retrieved successfully',
+            data: bookings
+        };
+
+    } catch (error) {
+        next(error);
+    }
+} //end
+
+
+
 export const BookingServices = {
     createBookingIntoDb,
+    getAllBookingsFromDb,
+    getUserSpecificBookingsFromDb,
+
+
 };

@@ -23,7 +23,61 @@ async function createBooking(req: Request, res: Response, next: NextFunction) {
 } //end
 
 
+
+async function getUserSpecificBookings(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await BookingServices.getUserSpecificBookingsFromDb(req.user, req.query, next);
+
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+
+        };
+
+    } catch (error) {
+        next(error);
+    }
+
+} //end
+
+
+
+
+
+
+async function getAllBookings(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await BookingServices.getAllBookingsFromDb(req.query, next);
+
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        }
+
+    } catch (error) {
+        next(error)
+    }
+} //end
+
+
+
+
+
 // exports
-export const bookingController = {
+export const bookingControllers = {
     createBooking,
-};
+    getAllBookings,
+    getUserSpecificBookings,
+
+
+}
