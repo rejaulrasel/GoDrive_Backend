@@ -72,12 +72,31 @@ async function getAllBookings(req: Request, res: Response, next: NextFunction) {
 
 
 
+async function deleteCanceledBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await BookingServices.deleteCanceledBookingFromDb(req.query._id as string, next);
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        }
+
+    } catch (error) {
+        next(error);
+    }
+} //end
+
+
+
+
 
 // exports
 export const bookingControllers = {
     createBooking,
     getAllBookings,
     getUserSpecificBookings,
-
-
+    deleteCanceledBooking,
 }

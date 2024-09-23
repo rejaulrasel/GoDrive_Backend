@@ -22,6 +22,8 @@ router.post('/', Auth('user'), ValidationRequest(BookingValidation.createCarBook
 
 router.get('/my-bookings', Auth('user'), bookingControllers.getUserSpecificBookings);
 
+router.delete('/delete', Auth('admin'), bookingControllers.deleteCanceledBooking);
+
 export const BookingRoutes = router;
 
 // 
