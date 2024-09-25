@@ -17,6 +17,8 @@ router.get("/", CarControllers.getAllCar);
 
 router.get("/:id", CarControllers.getSpecificCar);
 
+router.put('/return', Auth('admin'), CarControllers.returnCar);
+
 router.put(
   "/:id",
   Auth("admin"),

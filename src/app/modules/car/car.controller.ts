@@ -52,6 +52,28 @@ async function getSpecificCar(req: Request, res: Response, next: NextFunction) {
   }
 } //end;
 
+
+async function returnCar(req: Request, res: Response, next: NextFunction) {
+
+  try {
+    const result = await CarServices.returnCarFromDb(req.body, next);
+
+    if (result) {
+      res.status(result.statusCode).json({
+        success: result.success,
+        statusCode: result.statusCode,
+        message: result.message,
+        data: result.data
+      });
+    };
+
+  } catch (error) {
+    next(error);
+  }
+
+}// end
+
+
 async function updateSpecificCar(
   req: Request,
   res: Response,
@@ -100,4 +122,5 @@ export const CarControllers = {
   getSpecificCar,
   updateSpecificCar,
   deleteACar,
+  returnCar
 };
