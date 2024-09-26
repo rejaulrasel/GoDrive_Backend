@@ -128,7 +128,7 @@ async function returnCarFromDb(payload: any, next: NextFunction) {
           message: 'Invalid booking id',
           data: []
         }
-      };
+      }
 
       if (bookingObj.endTime) {
         return {
