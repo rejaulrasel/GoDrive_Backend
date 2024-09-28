@@ -4,8 +4,7 @@ import Car from "./car.model";
 import httpStatus from "http-status";
 import mongoose from "mongoose";
 import Booking from "../booking/booking.model";
-import moment from 'moment';
-
+import moment from "moment";
 
 async function createCarIntoDb(payload: TCar, next: NextFunction) {
   try {
@@ -111,7 +110,6 @@ async function getSpecificCarFromDb(query: string, next: NextFunction) {
   }
 } //end;
 
-
 async function returnCarFromDb(payload: any, next: NextFunction) {
   const session = await mongoose.startSession();
   const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -120,56 +118,67 @@ async function returnCarFromDb(payload: any, next: NextFunction) {
     session.startTransaction();
 
     try {
-      const bookingObj = await Booking.findById(payload?.bookingId).populate('car').session(session);
+      const bookingObj = await Booking.findById(payload?.bookingId)
+        .populate("car")
+        .session(session);
       if (!bookingObj) {
         return {
           success: false,
           statusCode: 400,
-          message: 'Invalid booking id',
-          data: []
-        }
+          message: "Invalid booking id",
+          data: [],
+        };
       }
 
       if (bookingObj.endTime) {
         return {
           success: false,
           statusCode: 400,
-          message: 'This booking is already closed',
-          data: []
-        }
-      };
+          message: "This booking is already closed",
+          data: [],
+        };
+      }
 
-      const startMoment = moment(bookingObj.startTime, 'HH:mm');
-      const endMoment = moment(payload.endTime, 'HH:mm');
+      const startMoment = moment(bookingObj.startTime, "HH:mm");
+      const endMoment = moment(payload.endTime, "HH:mm");
       const duration = moment.duration(endMoment.diff(startMoment)).asHours();
       const totalCost = duration * (bookingObj?.car as any).pricePerHour;
 
-      const updateCarStatus = await Car.findByIdAndUpdate((bookingObj?.car as any)._id, { status: 'available' }).session(session);
+      const updateCarStatus = await Car.findByIdAndUpdate(
+        (bookingObj?.car as any)._id,
+        { status: "available" },
+      ).session(session);
 
       if (!updateCarStatus) {
         return {
           success: false,
           statusCode: 400,
-          message: 'Operation Unsuccessful',
-          data: []
-        }
-      };
+          message: "Operation Unsuccessful",
+          data: [],
+        };
+      }
 
       const updateDataObj = {
         endTime: payload.endTime,
         totalCost: totalCost.toFixed(2),
-        status: 'succeed'
+        status: "succeed",
       };
 
-      const updateBooking = await Booking.findByIdAndUpdate(payload.bookingId, updateDataObj, { new: true }).populate('car user').session(session);
+      const updateBooking = await Booking.findByIdAndUpdate(
+        payload.bookingId,
+        updateDataObj,
+        { new: true },
+      )
+        .populate("car user")
+        .session(session);
 
       if (!updateBooking) {
         return {
           success: false,
           statusCode: 400,
-          message: 'Operation Unsuccessful',
-          data: []
-        }
+          message: "Operation Unsuccessful",
+          data: [],
+        };
       }
 
       await session.commitTransaction();
@@ -178,46 +187,39 @@ async function returnCarFromDb(payload: any, next: NextFunction) {
       return {
         success: true,
         statusCode: 200,
-        message: 'Car returned successfully',
-        data: updateBooking
-      }
-
+        message: "Car returned successfully",
+        data: updateBooking,
+      };
     } catch (error) {
       await session.abortTransaction();
       await session.endSession();
       next(error);
-    };
-
+    }
   } else {
-
     if (/^\d{4}$/.test(payload.endTime)) {
       return {
         success: false,
         statusCode: 400,
-        message: 'Time should be in HH:MM format, not without colon.',
-        data: []
-      }
-
+        message: "Time should be in HH:MM format, not without colon.",
+        data: [],
+      };
     } else if (/^\d{2}$/.test(payload.endTime)) {
       return {
         success: false,
         statusCode: 400,
-        message: 'Time should be in HH:MM format, you only provided hours.',
-        data: []
-      }
-
+        message: "Time should be in HH:MM format, you only provided hours.",
+        data: [],
+      };
     } else {
       return {
         success: false,
         statusCode: 400,
-        message: 'Invalid time format.',
-        data: []
-      }
+        message: "Invalid time format.",
+        data: [],
+      };
     }
   }
-
-}; // end
-
+} // end
 
 async function updateSpecificCarIntoDb(
   query: string,

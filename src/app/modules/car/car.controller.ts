@@ -52,9 +52,7 @@ async function getSpecificCar(req: Request, res: Response, next: NextFunction) {
   }
 } //end;
 
-
 async function returnCar(req: Request, res: Response, next: NextFunction) {
-
   try {
     const result = await CarServices.returnCarFromDb(req.body, next);
 
@@ -63,16 +61,13 @@ async function returnCar(req: Request, res: Response, next: NextFunction) {
         success: result.success,
         statusCode: result.statusCode,
         message: result.message,
-        data: result.data
+        data: result.data,
       });
-    };
-
+    }
   } catch (error) {
     next(error);
   }
-
-}// end
-
+} // end
 
 async function updateSpecificCar(
   req: Request,
@@ -122,5 +117,5 @@ export const CarControllers = {
   getSpecificCar,
   updateSpecificCar,
   deleteACar,
-  returnCar
+  returnCar,
 };
