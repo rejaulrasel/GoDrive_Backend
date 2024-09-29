@@ -15,11 +15,11 @@ const app: Application = express();
 
 // parser
 app.use(express.json());
-app.use(cors({ origin: ["http://localhost:5173"], credentials: true }));
+app.use(cors());
 
 // test endpoint
 app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to the car rental resevation system!");
+  res.send("Welcome to the car rental resevation system first time!");
 });
 
 // application route;
