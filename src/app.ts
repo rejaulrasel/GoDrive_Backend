@@ -21,7 +21,7 @@ app.use(cors({ origin: ['http://localhost:5173', 'https://godrive01.netlify.app/
 
 // test endpoint
 app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to the car rental resevation system!");
+  res.send("Welcome to the car rental resevation system ever!");
 });
 
 // application route;
