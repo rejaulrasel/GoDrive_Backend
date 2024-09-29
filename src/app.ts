@@ -15,11 +15,13 @@ const app: Application = express();
 
 // parser
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: ['http://localhost:5173', 'https://godrive01.netlify.app/'], credentials: true }));
+
+
 
 // test endpoint
 app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to the car rental resevation system first time!");
+  res.send("Welcome to the car rental resevation system!");
 });
 
 // application route;
