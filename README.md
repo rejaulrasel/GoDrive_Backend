@@ -44,7 +44,7 @@ The Car Rental System is a web application designed to manage the renting of car
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/rejaulrasel/GoDrive_Backend.gitt
+   git clone https://github.com/rejaulrasel/GoDrive_Backend.git
    cd GoDrive_backend
 
    ```
